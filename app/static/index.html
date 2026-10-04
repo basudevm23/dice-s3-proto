@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wapas Nahi · Live prototype</title>
+<link rel="stylesheet" href="/static/common.css">
+<style>
+  .wrap { max-width: 920px; margin: 0 auto; padding: 28px 18px 40px; }
+  h1 { margin: 0 0 6px; font-size: 30px; }
+  .lede { color: var(--muted); max-width: 640px; margin: 0 0 22px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  a.card { display: block; padding: 16px; text-decoration: none; color: inherit; border-top: 4px solid var(--brand); }
+  a.card:hover { border-color: var(--resold); }
+  a.card b { display: block; font-size: 16px; margin-bottom: 4px; }
+  .qr { display: flex; gap: 18px; align-items: center; margin-top: 22px; padding: 16px; flex-wrap: wrap; }
+  #qrcode { background: #fff; padding: 8px; border-radius: 8px; }
+  ol { padding-left: 20px; }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="brand">Valmo Wapas Nahi <small>live prototype</small></div><div class="spacer"></div><span class="conn"></span></div>
+<div class="wrap">
+  <h1>Refused parcels that don't go all the way back</h1>
+  <p class="lede">Three linked screens running on real Amazon India order data. A refusal logged on the rider's phone appears on the hub shelf at once, and the savings update live.</p>
+  <div class="cards">
+    <a class="card" href="/present"><b>Presenter view</b><span class="small muted">All three screens side by side</span></a>
+    <a class="card" href="/rider"><b>P1 · Rider app</b><span class="small muted">For delivery riders, on their phone</span></a>
+    <a class="card" href="/hub"><b>P2 · Hub app</b><span class="small muted">For hub staff, on a tablet</span></a>
+    <a class="card" href="/savings"><b>P3 · Manager dashboard</b><span class="small muted">For Valmo managers, on a laptop</span></a>
+  </div>
+  <div class="card qr">
+    <div id="qrcode"></div>
+    <div>
+      <b>Open the Rider app on your own mobile</b>
+      <div class="small muted" id="riderUrl"></div>
+      <ol class="small">
+        <li>Scan the code and keep the hub screen open on a laptop.</li>
+        <li>When a notification arrives, tap it, pick a reason and an outcome.</li>
+        <li>Watch the parcel appear on the hub shelf and the savings change.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+<script src="/static/common.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  const url = location.origin + '/rider';
+  document.getElementById('riderUrl').textContent = url;
+  try { new QRCode(document.getElementById('qrcode'), { text: url, width: 150, height: 150 }); }
+  catch (e) { document.getElementById('qrcode').textContent = 'QR unavailable offline'; }
+  WN.poll(() => {}, 5000);
+</script>
+</body>
+</html>

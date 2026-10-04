@@ -1,0 +1,8 @@
+# One-click hosting on Render (free). See README -> "Permanent public link".
+services:
+  - type: web
+    name: prodgods-rto-demo
+    runtime: python
+    plan: free
+    buildCommand: pip install -r app/requirements.txt
+    startCommand: gunicorn --chdir app -w 1 --threads 8 --timeout 60 -b 0.0.0.0:$PORT server:app

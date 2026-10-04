@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5b1f6e">
+<title>Valmo Partner · Rider app</title>
+<link rel="stylesheet" href="/static/common.css">
+<style>
+  body { background: #e9e5ef; min-height: 100vh; }
+  .stage { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px 10px; gap: 10px; }
+  .phone {
+    height: min(740px, calc(100dvh - 56px)); aspect-ratio: 360 / 740; border-radius: 46px; background: #121016; padding: 12px;
+    box-shadow: 0 20px 50px rgba(30, 10, 50, .35), inset 0 0 0 2px #2a2630; position: relative;
+  }
+  .screen { width: 100%; height: 100%; border-radius: 36px; overflow: hidden; position: relative; background: #f7f5fa; display: flex; flex-direction: column; }
+  .island { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 96px; height: 26px; background: #121016; border-radius: 20px; z-index: 5; }
+  .statusbar { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 14px 26px 4px; font-size: 13px; font-weight: 650; z-index: 4; color: var(--ink); }
+  .statusbar.light { color: #fff; }
+  .view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+  .under { font-size: 12.5px; color: var(--muted); text-align: center; max-width: 360px; }
+
+  /* real phones: drop the frame and fill the screen */
+  @media (max-width: 520px) {
+    .stage { padding: 0; }
+    .phone { width: 100vw; height: 100dvh; aspect-ratio: auto; border-radius: 0; padding: 0; box-shadow: none; background: none; }
+    .screen { border-radius: 0; }
+    .island, .under { display: none; }
+  }
+
+  /* lock screen */
+  .lock { flex: 1; background: linear-gradient(160deg, #3b1250 0%, #6b2a7e 45%, #c45a7a 100%); color: #fff; padding: 46px 14px 16px; display: flex; flex-direction: column; min-height: 100%; }
+  .lock .bigtime { font-size: clamp(44px, 9vh, 64px); font-weight: 300; text-align: center; letter-spacing: 1px; line-height: 1.05; margin-top: 10px; }
+  .lock .date { text-align: center; opacity: .9; }
+  .lockbar { display: flex; justify-content: flex-end; margin-top: 4px; }
+  .lock .date { margin-bottom: 18px; }
+  .notif {
+    background: rgba(255,255,255,.92); color: var(--ink); border-radius: 18px; padding: 11px 13px; margin-bottom: 9px;
+    display: grid; grid-template-columns: 36px 1fr; gap: 0 10px; text-align: left; border: 0; width: 100%;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18);
+  }
+  @media (prefers-reduced-motion: no-preference) { .notif.new { animation: drop .45s cubic-bezier(.2,.9,.3,1.2); } }
+  @keyframes drop { from { transform: translateY(-30px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .appicon { width: 36px; height: 36px; border-radius: 9px; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 800; grid-row: span 3; }
+  .notif .top { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+  .notif .title { font-weight: 700; font-size: 14.5px; }
+  .notif .body { font-size: 13.5px; }
+  .notif .timer { font-size: 11.5px; color: var(--alone); margin-top: 2px; }
+  .idle { margin-top: auto; text-align: center; font-size: 13px; opacity: .85; }
+  .getnext { margin: 10px auto 0; display: block; background: rgba(255,255,255,.92); color: var(--brand); border: 0; border-radius: 999px; padding: 9px 18px; font-weight: 700; font-size: 13.5px; }
+  .getnext:disabled { opacity: .5; }
+  .daystats { display: flex; gap: 8px; margin-top: 12px; }
+  .daystats div { flex: 1; background: rgba(255,255,255,.14); border-radius: 12px; padding: 8px; text-align: center; font-size: 12px; }
+  .daystats b { display: block; font-size: 20px; }
+
+  /* app screens */
+  .appbar { background: var(--brand); color: #fff; padding: 44px 16px 12px; display: flex; align-items: center; gap: 10px; }
+  .appbar button { background: none; border: 0; color: #fff; font-size: 20px; padding: 0 4px; }
+  .appbar .t { font-weight: 700; }
+  .content { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+  .parcel { padding: 12px 14px; }
+  .parcel .row { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+  .parcel .item { font-weight: 700; font-size: 16px; margin: 2px 0; }
+  .q { font-weight: 700; font-size: 16px; margin: 4px 2px 0; }
+  .reason {
+    text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 12px 13px;
+    display: grid; grid-template-columns: 34px 1fr; gap: 0 10px; align-items: center;
+  }
+  .reason .ic { font-size: 24px; grid-row: span 2; text-align: center; }
+  .reasons { display: flex; flex-direction: column; gap: 8px; }
+  .hint { font-size: 13.5px; color: var(--muted); }
+  .appbar .langbtn { margin-left: auto; }
+  .reason:hover, .reason:active { border-color: var(--resold); background: #f6f3ff; }
+  .reason b { font-size: 14.5px; }
+  .reason span { font-size: 12.5px; color: var(--muted); }
+  .fixcard { padding: 16px; border-left: 4px solid var(--door); }
+  .fixcard .lbl { font-size: 12px; text-transform: none; color: var(--door); font-weight: 700; }
+  .fixcard .fix { font-size: 18px; font-weight: 700; margin: 4px 0 6px; }
+  .btn { border: 0; border-radius: 14px; padding: 16px; font-weight: 750; font-size: 16px; }
+  .btn.yes { background: var(--door); color: #fff; }
+  .btn.no { background: #fff; color: var(--alone); border: 1.5px solid var(--alone); }
+  .btn.plain { background: var(--brand); color: #fff; }
+  .result { text-align: center; padding: 56px 18px 26px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .result .icon { width: 74px; height: 74px; border-radius: 50%; display: grid; place-items: center; font-size: 36px; color: #fff; }
+  .result h2 { margin: 4px 0 0; font-size: 21px; }
+  .decision { padding: 12px 14px; text-align: left; width: 100%; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="statusbar" id="statusbar"><span id="sbTime" class="num">--:--</span><span>4G ▂▄▆ 🔋</span></div>
+      <div class="view" id="view"></div>
+    </div>
+  </div>
+  <div class="under">Valmo Partner rider app (prototype) <span class="conn"></span></div>
+</div>
+
+<script src="/static/common.js"></script>
+<script>
+/* What the rider sees for each reason: plain words, an icon, and one clear instruction. */
+const UI = {
+  no_cash:      { icon: '💵', en: 'No cash right now', hi: 'अभी पैसे नहीं हैं',
+                  fix_en: 'Ask the customer to pay by UPI', fix_hi: 'ग्राहक से UPI से पेमेंट करने को कहें',
+                  hint_en: 'Show the payment QR in your app.', hint_hi: 'ऐप में पेमेंट QR दिखाएं।' },
+  changed_mind: { icon: '✋', en: "Doesn't want it any more", hi: 'अब नहीं चाहिए' },
+  fit_quality:  { icon: '📏', en: 'Wrong size / not as expected', hi: 'साइज़ या सामान सही नहीं',
+                  fix_en: 'Offer a free size exchange', fix_hi: 'फ्री में साइज़ बदलने का ऑफर दें',
+                  hint_en: 'The new size will come separately. Bring this one back to the hub.',
+                  hint_hi: 'नया साइज़ अलग से आएगा। यह पार्सल हब पर वापस लाएं।' },
+  not_home:     { icon: '🏠', en: 'Not at home / not answering', hi: 'घर पर नहीं / फ़ोन नहीं उठाया',
+                  fix_en: 'Leave it with a neighbour or a nearby partner shop', fix_hi: 'पड़ोसी या पास की पार्टनर दुकान पर दें',
+                  hint_en: "Only after the customer says OK on call or WhatsApp.", hint_hi: 'सिर्फ़ ग्राहक के कॉल या WhatsApp पर हाँ कहने के बाद।' },
+  reschedule:   { icon: '📅', en: 'Asks to come another day', hi: 'किसी और दिन आने को कहा',
+                  fix_en: 'Book a new delivery day', fix_hi: 'नया डिलीवरी दिन बुक करें',
+                  hint_en: 'The customer picks the day on WhatsApp.', hint_hi: 'ग्राहक WhatsApp पर दिन चुनेगा।' },
+  address:      { icon: '📍', en: "Can't find the address", hi: 'पता नहीं मिल रहा',
+                  fix_en: 'Ask the customer to send their location on WhatsApp', fix_hi: 'ग्राहक से WhatsApp पर लोकेशन मंगाएं',
+                  hint_en: 'Then try again.', hint_hi: 'फिर दोबारा कोशिश करें।' },
+  fake:         { icon: '🚫', en: 'Customer says they never ordered', hi: 'ग्राहक ने कहा ऑर्डर नहीं किया' },
+  carrier:      { icon: '🛵', en: "Couldn't reach today (our side)", hi: 'आज नहीं पहुँच पाए (हमारी तरफ़ से)',
+                  fix_en: 'Try again tomorrow', fix_hi: 'कल फिर से कोशिश करें',
+                  hint_en: "It will be added to tomorrow's route.", hint_hi: 'यह कल के रूट में जुड़ जाएगा।' },
+};
+const T = (en, hi) => WN.t(en, hi);
+const standalone = window.self === window.top;      // opened directly (e.g. on a judge's phone)
+let ui = { mode: 'home', taskId: null, reasonId: null, result: null };
+let seenTasks = new Set();
+let reasons = {};
+const view = document.getElementById('view');
+const pad = n => String(n).padStart(2, '0');
+function realTime() { const d = new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+function realDate() {
+  return new Date().toLocaleDateString(WN.lang === 'hi' ? 'hi-IN' : 'en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+function task() { return WN.state?.rider.tasks.find(t => t.id === ui.taskId); }
+function go(mode, extra = {}) { ui = { ...ui, mode, ...extra }; render(WN.state); }
+function hasFix(id) { return !!UI[id]?.fix_en; }
+
+function parcelCard(t) {
+  return `<div class="card parcel">
+    <div class="row"><span>${WN.esc(t.id)}</span><span>${T('Area', 'क्षेत्र')} ${WN.esc(t.pin)}</span></div>
+    <div class="item">${WN.esc(t.category)} · ${T('size', 'साइज़')} ${WN.esc(t.size)}</div>
+    ${t.amount ? `<div class="row"><span>${T('Cash on delivery', 'कैश ऑन डिलीवरी')}</span><b class="num" style="color:var(--ink)">${WN.inr(t.amount)}</b></div>` : ''}
+  </div>`;
+}
+
+function homeView(s) {
+  const tasks = s.rider.tasks;
+  const notifs = tasks.map(t => `
+    <button class="notif ${seenTasks.has(t.id) ? '' : 'new'}" data-open="${t.id}">
+      <div class="appicon">V</div>
+      <div class="top"><span>VALMO PARTNER</span><span>${(t.age_seconds || 0) < 60 ? T('now', 'अभी') : Math.floor(t.age_seconds / 60) + T('m ago', ' मिनट पहले')}</span></div>
+      <div class="title">${T('Delivery not completed', 'डिलीवरी पूरी नहीं हुई')}</div>
+      <div class="body">${WN.esc(t.category)} · ${WN.esc(t.size)}${t.amount ? ` · COD ${WN.inr(t.amount)}` : ''}. ${T('Tap to tell us why.', 'टैप करके कारण बताएं।')}</div>
+    </button>`).join('');
+  const more = s.clock.next_refusal_in_days != null;
+  return `<div class="lock">
+    <div class="lockbar">${WN.langButton()}</div>
+    <div class="bigtime num">${realTime()}</div>
+    <div class="date">${realDate()}</div>
+    ${notifs}
+    <div class="idle">${tasks.length ? '' : T('No pending tasks', 'कोई काम बाकी नहीं')}
+      ${standalone && !tasks.length && more ? `<button class="getnext" data-getnext>Demo: next parcel</button>` : ''}
+    </div>
+  </div>`;
+}
+
+function appbar(title, back = true) {
+  return `<div class="appbar">${back ? '<button data-back aria-label="Back">←</button>' : ''}<span class="t">${title}</span>${WN.langButton()}</div>`;
+}
+
+function reasonView(t) {
+  const list = Object.values(reasons).filter(r => UI[r.id]).map(r => `
+    <button class="reason" data-reason="${r.id}"><span class="ic">${UI[r.id].icon}</span>
+      <b>${T(UI[r.id].en, UI[r.id].hi)}</b><span class="hint">${WN.lang === 'hi' ? UI[r.id].en : UI[r.id].hi}</span></button>`).join('');
+  return `${appbar(T('Delivery not completed', 'डिलीवरी पूरी नहीं हुई'))}<div class="content">${parcelCard(t)}
+    <div class="q">${T('What happened at the door?', 'दरवाज़े पर क्या हुआ?')}</div><div class="reasons">${list}</div></div>`;
+}
+
+function fixView(t) {
+  const u = UI[ui.reasonId];
+  if (!hasFix(ui.reasonId)) {
+    return `${appbar(T('Bring it back', 'वापस लाएं'))}<div class="content">${parcelCard(t)}
+      <div class="card fixcard" style="border-left-color:var(--brand)">
+        <div class="lbl" style="color:var(--brand)">${T('WHAT TO DO', 'क्या करना है')}</div>
+        <div class="fix">${T('Bring this parcel back to the hub', 'यह पार्सल हब पर वापस लाएं')}</div>
+        <div class="hint">${T('Keep it sealed. Do not open the packet.', 'पैकेट सील रखें। खोलें नहीं।')}</div>
+      </div>
+      <button class="btn plain" data-answer="0">${T('OK, bringing it back', 'ठीक है, वापस ला रहा हूँ')}</button></div>`;
+  }
+  return `${appbar(T('Try this first', 'पहले यह करें'))}<div class="content">${parcelCard(t)}
+    <div class="card fixcard">
+      <div class="lbl">${T('TRY THIS', 'यह करें')}</div>
+      <div class="fix">${T(u.fix_en, u.fix_hi)}</div>
+      <div class="hint">${T(u.hint_en, u.hint_hi)}</div>
+    </div>
+    <button class="btn yes" data-answer="1">✓ ${T('Customer agreed', 'ग्राहक मान गए')}</button>
+    <button class="btn no" data-answer="0">✗ ${T('Still refused', 'फिर भी मना किया')}</button>
+  </div>`;
+}
+
+function resultView() {
+  const res = ui.result;
+  if (res.result === 'delivered') {
+    return `<div class="result" style="margin-top:40px">
+      <div class="icon" style="background:var(--door)">✓</div>
+      <h2>${T('Done!', 'हो गया!')}</h2>
+      <div class="hint">${T('Parcel delivered. No return trip needed.', 'पार्सल डिलीवर हो गया। वापसी की ज़रूरत नहीं।')}</div>
+      <button class="btn plain" data-home style="width:100%;margin-top:18px">${T('Next', 'आगे')}</button></div>`;
+  }
+  const exch = ui.reasonId === 'fit_quality' && ui.accepted;
+  return `<div class="result" style="margin-top:30px">
+    <div class="icon" style="background:var(--brand)">↩</div>
+    <h2>${exch ? T('Exchange booked', 'एक्सचेंज बुक हो गया') : T('Bring it back to the hub today', 'आज इसे हब पर वापस लाएं')}</h2>
+    <div class="hint">${exch ? T('Bring this parcel back to the hub today. Keep it sealed.', 'आज यह पार्सल हब पर वापस लाएं। सील रखें।')
+      : T('Keep it sealed. The hub may give it to another customer nearby.', 'सील रखें। हब इसे पास के किसी दूसरे ग्राहक को दे सकता है।')}</div>
+    <button class="btn plain" data-home style="width:100%;margin-top:18px">${T('Next', 'आगे')}</button></div>`;
+}
+
+function render(s) {
+  if (!s) return;
+  document.getElementById('sbTime').textContent = realTime();
+  const ids = s.rider.tasks.map(t => t.id);
+  if (ids.some(id => !seenTasks.has(id)) && navigator.vibrate) navigator.vibrate(180);
+  if ((ui.mode === 'reason' || ui.mode === 'fix') && !task()) {
+    WN.toast(T('This parcel was already handled.', 'यह पार्सल पहले ही हो चुका है।'));
+    ui = { mode: 'home' };
+  }
+  document.getElementById('statusbar').classList.toggle('light', ui.mode !== 'result');
+  let html;
+  if (ui.mode === 'reason') html = reasonView(task());
+  else if (ui.mode === 'fix') html = fixView(task());
+  else if (ui.mode === 'result') html = resultView();
+  else html = homeView(s);
+  if (view.dataset.html !== html) { view.innerHTML = html; view.dataset.html = html; }
+  ids.forEach(id => seenTasks.add(id));
+}
+
+view.addEventListener('click', async e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if ('lang' in b.dataset) { WN.setLang(WN.lang === 'hi' ? 'en' : 'hi'); render(WN.state); }
+  else if (b.dataset.open) go('reason', { taskId: b.dataset.open });
+  else if ('back' in b.dataset) go(ui.mode === 'fix' ? 'reason' : 'home');
+  else if (b.dataset.reason) go('fix', { reasonId: b.dataset.reason });
+  else if (b.dataset.answer !== undefined) {
+    b.disabled = true;
+    const accepted = b.dataset.answer === '1';
+    const res = await WN.post('/api/rider/answer', { task_id: ui.taskId, reason_id: ui.reasonId, accepted });
+    if (!res.ok) { WN.toast(T('This parcel was already handled.', 'यह पार्सल पहले ही हो चुका है।')); go('home'); return; }
+    go('result', { result: res, accepted });
+  } else if ('home' in b.dataset) go('home', { taskId: null, reasonId: null, result: null });
+  else if ('getnext' in b.dataset) { b.disabled = true; await WN.control('next_parcel'); }
+});
+
+WN.getStatic().then(st => {
+  st.reasons.forEach(r => { reasons[r.id] = r; });
+  WN.poll(render, 1000);
+});
+</script>
+</body>
+</html>

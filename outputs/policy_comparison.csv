@@ -1,0 +1,13 @@
+batched_return,policy,share_held,match_rate_of_held,cost_per_refused_parcel
+batched Rs 50,Return all (today),0.0,,120.0
+batched Rs 50,Hold all (unlimited space),1.0,0.136,47.1
+batched Rs 50,Space for 50%: random pick,0.5,0.114,83.9
+batched Rs 50,Space for 50%: pick by rule,0.5,0.239,82.0
+batched Rs 50,Space for 25%: random pick,0.25,0.14,101.8
+batched Rs 50,Space for 25%: pick by rule,0.25,0.396,99.8
+batched Rs 120,Return all (today),0.0,,120.0
+batched Rs 120,Hold all (unlimited space),1.0,0.136,107.6
+batched Rs 120,Space for 50%: random pick,0.5,0.136,113.8
+batched Rs 120,Space for 50%: pick by rule,0.5,0.239,108.7
+batched Rs 120,Space for 25%: random pick,0.25,0.123,117.2
+batched Rs 120,Space for 25%: pick by rule,0.25,0.396,110.4

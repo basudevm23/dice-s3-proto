@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valmo · Manager dashboard</title>
+<link rel="stylesheet" href="/static/common.css">
+<style>
+  .wrap { max-width: 760px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .hero { padding: 18px 20px; }
+  .hero .lbl { font-size: 14px; color: var(--muted); }
+  .hero .big { font-size: 42px; font-weight: 800; line-height: 1.1; margin: 2px 0 6px; color: var(--door); }
+  .hero .big.wait { color: var(--muted); font-size: 26px; font-weight: 600; }
+  .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+  .pair div { background: var(--bg); border-radius: 10px; padding: 10px 12px; }
+  .pair b { display: block; font-size: 20px; }
+  .pair .was { text-decoration: line-through; color: var(--muted); }
+  @media (max-width: 520px) { .pair { grid-template-columns: 1fr; } .hero .big { font-size: 34px; } }
+  .box { padding: 14px 18px; }
+  .box h2 { font-size: 16px; margin: 0 0 10px; }
+  .step { display: grid; grid-template-columns: 190px 1fr 40px; gap: 10px; align-items: center; margin: 8px 0; font-size: 14px; }
+  .step .track { height: 14px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+  .step .track b { display: block; height: 100%; border-radius: 4px; transition: width .5s; }
+  .step .v { text-align: right; font-weight: 750; }
+  @media (max-width: 520px) { .step { grid-template-columns: 130px 1fr 32px; } }
+  .note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  td { padding: 8px 4px; border-bottom: 1px solid var(--line); }
+  td:last-child { text-align: right; font-weight: 750; font-variant-numeric: tabular-nums; }
+  tr.key td { font-size: 16px; }
+  tr.key td:last-child { color: var(--door); }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">Returns savings <small id="dname"></small></div>
+  <div class="spacer"></div>
+  <div class="clock" id="today"></div><span class="conn"></span>
+</div>
+<div class="wrap">
+  <div class="card hero">
+    <div class="lbl">Money saved on refused parcels so far</div>
+    <div class="big num" id="saved">–</div>
+    <div class="small muted" id="savedsub"></div>
+    <div class="pair">
+      <div><span class="small muted">Return cost per refused parcel, before</span><b class="num was">₹120</b></div>
+      <div><span class="small muted">Return cost per refused parcel, now</span><b class="num" id="perNow">–</b></div>
+    </div>
+  </div>
+
+  <div class="card box">
+    <h2>What happened to refused parcels</h2>
+    <div id="ladder"></div>
+  </div>
+
+  <div class="card box">
+    <h2 id="projTitle">3-month estimate</h2>
+    <p class="note" id="projSub" style="margin:-4px 0 10px"></p>
+    <table id="projTable"></table>
+    <p class="note">Range: the lower cost if return trucks are shared fully, the higher if they are not.</p>
+  </div>
+</div>
+
+<script src="/static/common.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const MIN_CLOSED = 5;
+let st = null;
+
+function range(lo, hi) {
+  return Math.round(lo) === Math.round(hi) ? WN.inr(lo) : `${WN.inr(lo)}–${Math.round(hi).toLocaleString('en-IN')}`;
+}
+function bar(label, n, total, color) {
+  const w = total ? Math.round(n / total * 100) : 0;
+  return `<div class="step"><span>${label}</span><div class="track"><b style="width:${w}%;background:${color}"></b></div><span class="v num">${n}</span></div>`;
+}
+
+function renderProjection(s) {
+  const d = st.districts[s.district];
+  const p = d.projection;
+  if (!p) { $('projTable').innerHTML = ''; return; }
+  $('projTitle').textContent = `${d.name}: 3-month estimate`;
+  $('projSub').textContent = `Based on one seller's real orders in ${d.name} over 3 months. Valmo carries many more parcels here, so its total saving is larger; the saving per parcel stays the same.`;
+  const lo = p.scenarios.k1_low, hi = p.scenarios.k1_high;
+  const refused = p.refused_at_valmo_rto;
+  const f = refused / lo.refused;                     // rescale to the rounded parcel count
+  const toShelf = Math.round(lo.sent_to_shelf * f);
+  const resold = Math.round(lo.resold_locally * f);
+  const today = refused * 120, newLo = lo.cost_with_wapas_nahi * f, newHi = hi.cost_with_wapas_nahi * f;
+  $('projTable').innerHTML = `
+    <tr><td>Refused parcels expected</td><td>${refused}</td></tr>
+    <tr><td>Delivered after a fix at the door</td><td>${refused - toShelf}</td></tr>
+    <tr><td>Sold to a nearby customer</td><td>${resold}</td></tr>
+    <tr><td>Sent back in shared return trucks</td><td>${toShelf - resold}</td></tr>
+    <tr><td>Return cost today (₹120 each)</td><td>${WN.inr(today)}</td></tr>
+    <tr><td>Return cost with Wapas Nahi</td><td>${range(newLo, newHi)}</td></tr>
+    <tr class="key"><td><b>Money saved</b></td><td>${range(today - newHi, today - newLo)}</td></tr>
+    <tr class="key"><td><b>Return cost per refused parcel</b></td><td>₹120 → ${range(newLo / refused, newHi / refused)}</td></tr>`;
+}
+
+function render(s) {
+  $('dname').textContent = `· ${s.district_name}`;
+  $('today').textContent = s.clock.date;
+  const m = s.money, t = s.tally;
+  if (m.closed >= MIN_CLOSED) {
+    $('saved').className = 'big num';
+    $('saved').textContent = range(m.saved_low, m.saved_high);
+    $('savedsub').textContent = `On ${m.closed} finished parcels. ${t.on_shelf} still on the hub shelf.`;
+    $('perNow').textContent = range(m.per_parcel_low, m.per_parcel_high);
+  } else {
+    $('saved').className = 'big num wait';
+    $('saved').textContent = 'Counting…';
+    $('savedsub').textContent = `Shown after ${MIN_CLOSED} parcels are finished (${m.closed} so far).`;
+    $('perNow').textContent = '–';
+  }
+  const n = t.refused;
+  const html =
+    bar('Refused at the door', n, n, 'var(--ink)') +
+    bar('Delivered after a fix', t.fixed_at_door, n, 'var(--door)') +
+    bar('Sold to a nearby customer', t.resold, n, 'var(--resold)') +
+    bar('Still on the hub shelf', t.on_shelf, n, '#b9aef0') +
+    bar('Sent back in return truck', t.batched, n, 'var(--batch)') +
+    bar('Sent back alone', t.returned_alone, n, 'var(--alone)') +
+    (t.waiting_for_rider ? bar('With rider', t.waiting_for_rider, n, 'var(--muted)') : '');
+  if ($('ladder').dataset.h !== html) { $('ladder').innerHTML = html; $('ladder').dataset.h = html; }
+  renderProjection(s);
+}
+
+WN.getStatic().then(data => { st = data; WN.poll(render, 1000); });
+</script>
+</body>
+</html>

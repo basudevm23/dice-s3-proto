@@ -1,0 +1,9 @@
+pandas>=2.0
+numpy>=1.24
+requests>=2.31
+matplotlib>=3.7
+google-play-scraper>=1.2.7   # step1_collect/02_playstore_reviews.py
+# optional extras (install only if you use them):
+#   pip install praw       -> step1_collect/03_reddit_posts.py
+#   pip install kaggle     -> official Kaggle download in 01_get_data.py
+#   pip install jupytext   -> convert the .py files into .ipynb notebooks

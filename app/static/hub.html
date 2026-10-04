@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valmo · Hub app</title>
+<link rel="stylesheet" href="/static/common.css">
+<style>
+  body { font-size: 16px; }
+  .wrap { padding: 14px 18px 24px; display: flex; flex-direction: column; gap: 16px; }
+  h2 { font-size: 17px; margin: 0 0 10px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  h2 small { font-size: 13px; font-weight: 500; color: var(--muted); }
+
+  /* "Do now" task cards */
+  .tasks { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+  .task { border-radius: 14px; padding: 12px 14px; color: #fff; display: flex; flex-direction: column; gap: 3px; min-height: 104px; }
+  .task .act { font-size: 17px; font-weight: 800; line-height: 1.25; }
+  .task .it { font-size: 14px; opacity: .95; }
+  .task .tm { font-size: 12px; opacity: .8; margin-top: auto; }
+  .task.hold { background: #5b3fd6; }
+  .task.pick { background: #17876b; }
+  .task.bag { background: #b87a0c; }
+  .task.return { background: #b5402c; }
+  .task .slotchip { display: inline-block; background: rgba(255,255,255,.25); border-radius: 8px; padding: 0 8px; margin-left: 6px; }
+  .task .done { margin-top: 8px; align-self: flex-start; border: 0; border-radius: 10px; background: rgba(255,255,255,.92); font-weight: 800; font-size: 15px; padding: 7px 16px; }
+  .task.hold .done { color: #4a2fc0; } .task.pick .done { color: #136b53; } .task.bag .done { color: #8a5b00; } .task.return .done { color: #a33522; }
+  .task .row2 { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; gap: 8px; }
+  @media (prefers-reduced-motion: no-preference) { .task.new { animation: pop .5s ease-out; } }
+  @keyframes pop { from { transform: scale(.94); opacity: .3; } to { transform: none; opacity: 1; } }
+
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px; }
+  @media (max-width: 1000px) { .cols { grid-template-columns: 1fr; } }
+
+  /* new returns from riders */
+  .arr { padding: 12px 14px; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; margin-bottom: 8px; }
+  .arr .it { font-weight: 750; font-size: 16px; }
+  .arr .sub { font-size: 13px; color: var(--muted); }
+  .badge { border-radius: 10px; padding: 6px 10px; font-weight: 800; font-size: 14px; text-align: center; grid-row: span 2; white-space: nowrap; }
+  .badge.keep { background: #ebe6ff; color: #4a2fc0; }
+  .badge.back { background: #fde8e4; color: #a33522; }
+  .chance { font-size: 12.5px; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+  .chance.high { background: #dff3ea; color: #136b53; }
+  .chance.med { background: #fff1d6; color: #8a5b00; }
+  .chance.low { background: #eee; color: #666; }
+  .waiting { font-size: 14px; color: var(--muted); padding: 10px 14px; margin-bottom: 8px; }
+
+  /* the shelf */
+  .rack { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+  .slot { border-radius: 12px; padding: 8px 10px; min-height: 88px; display: flex; flex-direction: column; gap: 1px; background: #fff; border: 2px solid var(--line); }
+  .slot .lbl { font-size: 12px; font-weight: 800; color: var(--muted); }
+  .slot .it { font-weight: 750; font-size: 14px; line-height: 1.2; }
+  .slot .left { margin-top: auto; font-size: 12.5px; font-weight: 700; }
+  .slot.ok { border-color: #a9dcc8; } .slot.ok .left { color: #136b53; }
+  .slot.soon { border-color: #f1cf86; } .slot.soon .left { color: #8a5b00; }
+  .slot.last { border-color: #f0a99c; } .slot.last .left { color: #a33522; }
+  .slot.empty { background: transparent; border: 2px dashed var(--line); color: #b9b4c4; justify-content: center; align-items: center; }
+
+  .today { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 700px) { .today { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .stat { padding: 12px 14px; border-top: 5px solid; }
+  .stat b { display: block; font-size: 30px; line-height: 1.1; }
+  .stat span { font-size: 13.5px; color: var(--muted); }
+  .empty-note { color: var(--muted); font-size: 14px; padding: 14px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">Valmo Hub <small id="dname"></small></div>
+  <div class="clock" id="today"></div>
+  <div class="spacer"></div>
+  <div class="controls" id="controls"></div>
+  <span id="langSlot"></span>
+</div>
+
+<div class="wrap">
+  <section>
+    <h2 id="hDo"></h2>
+    <div class="tasks" id="tasks"></div>
+  </section>
+
+  <div class="cols">
+    <section>
+      <h2 id="hNew"></h2>
+      <div id="incoming"></div>
+    </section>
+    <section>
+      <h2><span id="hShelf"></span><small id="shelfcount"></small></h2>
+      <div class="rack" id="rack"></div>
+    </section>
+  </div>
+
+  <section>
+    <h2 id="hToday"></h2>
+    <div class="today" id="stats"></div>
+  </section>
+</div>
+
+<script src="/static/common.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const T = (en, hi) => WN.t(en, hi);
+const REASON = {
+  no_cash: ['No cash', 'पैसे नहीं'], changed_mind: ["Doesn't want it", 'अब नहीं चाहिए'],
+  fit_quality: ['Wrong size', 'साइज़ गलत'], not_home: ['Not at home', 'घर पर नहीं'],
+  reschedule: ['Another day', 'दूसरे दिन'], address: ['Address not found', 'पता नहीं मिला'],
+  fake: ['Never ordered', 'ऑर्डर नहीं किया'], carrier: ['Not reached', 'नहीं पहुँचे'],
+};
+let reasonIdByLabel = {};
+let syncControls = null;
+let seenTasks = new Set();
+const doneTasks = new Set();                       // ticked off by hub staff on this tablet
+const taskKey = x => `${x.kind}|${x.id}|${x.date}|${x.when}`;
+const embedded = window.self !== window.top;
+
+function setHTML(el, html) { if (el.dataset.h !== html) { el.innerHTML = html; el.dataset.h = html; } }
+function reasonText(label) {
+  const id = reasonIdByLabel[label];
+  return id && REASON[id] ? T(REASON[id][0], REASON[id][1]) : WN.esc(label || '');
+}
+
+function taskCard(x) {
+  const it = `${WN.esc(x.category)} · ${WN.esc(x.size)}`;
+  const slot = x.slot ? `<span class="slotchip">${WN.esc(x.slot)}</span>` : '';
+  const key = taskKey(x);
+  const body = {
+    hold:   [T('Put on shelf', 'शेल्फ पर रखें') + slot, it],
+    pick:   [T('Take out', 'निकालें') + slot + ' → ' + T('give to rider', 'राइडर को दें'), it + ' · ' + T('new order nearby', 'पास में नया ऑर्डर')],
+    bag:    [T('Take out', 'निकालें') + slot + ' → ' + T('return bag', 'वापसी बैग'),
+             it + ' · ' + (x.why === 'space' ? T('making space', 'जगह बनाने के लिए') : T('time is up', 'समय पूरा'))],
+    return: [T('Send back to seller', 'सेलर को वापस भेजें'), it],
+  }[x.kind];
+  return `<div class="task ${x.kind}"><div class="act">${body[0]}</div>
+    <div class="it">${body[1]}</div>
+    <div class="row2"><span class="tm">${WN.esc(x.date)} · ${WN.esc(x.when)}</span>
+      <button class="done" data-done="${WN.esc(key)}">✓ ${T('Done', 'हो गया')}</button></div></div>`;
+}
+
+function render(s) {
+  if (syncControls) syncControls(s);
+  $('dname').textContent = `· ${s.district_name}`;
+  $('today').textContent = T('Today', 'आज') + ': ' + s.clock.date;
+  setHTML($('langSlot'), WN.langButton());
+  $('hNew').textContent = T('Returned by riders', 'राइडर से वापस आए पार्सल');
+  $('hShelf').textContent = T('Shelf', 'शेल्फ');
+  $('hToday').textContent = T('So far', 'अब तक');
+
+  const pending = s.hub.feed.filter(x => !doneTasks.has(taskKey(x)));
+  $('hDo').textContent = T('Do now', 'अभी करें') + (pending.length ? ` (${pending.length})` : '');
+  setHTML($('tasks'), pending.slice(0, 4).map(taskCard).join('')
+    || `<div class="empty-note">✓ ${T('All done. Nothing to do right now.', 'सब हो गया। अभी कोई काम नहीं।')}</div>`);
+
+  const waiting = s.rider.tasks.length
+    ? `<div class="card waiting">🛵 ${s.rider.tasks.length} ${T('parcel(s) on the way back with riders', 'पार्सल राइडर के साथ वापस आ रहे हैं')}</div>` : '';
+  setHTML($('incoming'), waiting + (s.hub.incoming.slice(0, 5).map(a => {
+    const lv = WN.level(a.p_match);
+    const keep = a.decision === 'HOLD';
+    return `<div class="card arr">
+      <span class="it">${WN.esc(a.category)} · ${WN.esc(a.size)}</span>
+      <span class="badge ${keep ? 'keep' : 'back'}">${keep ? T('KEEP', 'रखें') + ' · ' + WN.esc(a.slot || '') : T('SEND BACK', 'वापस भेजें')}</span>
+      <span class="sub">${reasonText(a.reason)} · ${T('Local buyer chance', 'पास में ग्राहक')}:
+        <span class="chance ${lv.key}">${T(lv.en, lv.hi)}</span></span>
+    </div>`;
+  }).join('') || (waiting ? '' : `<div class="empty-note">${T('No returns yet today.', 'आज अभी कोई वापसी नहीं।')}</div>`)));
+
+  const slots = s.settings.shelf_slots;
+  $('shelfcount').textContent = `${s.hub.shelf.length} / ${slots} ${T('used', 'भरे')}`;
+  const bySlot = {};
+  s.hub.shelf.forEach(p => { bySlot[p.slot] = p; });
+  const shown = Math.min(slots, Math.max(10, Math.ceil((s.hub.shelf.length + 2) / 5) * 5));
+  const tiles = [];
+  for (let i = 0; i < shown; i++) {
+    const label = String.fromCharCode(65 + Math.floor(i / 10)) + (i % 10 + 1);
+    const p = bySlot[label];
+    if (!p) { tiles.push(`<div class="slot empty"><span class="lbl">${label}</span>${T('Empty', 'खाली')}</div>`); continue; }
+    const d = Math.ceil(p.days_left);
+    const cls = d <= 1 ? 'last' : d <= 3 ? 'soon' : 'ok';
+    const left = d <= 1 ? T('Last day', 'आख़िरी दिन') : `${d} ${T('days left', 'दिन बाकी')}`;
+    tiles.push(`<div class="slot ${cls}"><span class="lbl">${label}</span>
+      <span class="it">${WN.esc(p.category)}<br>${T('Size', 'साइज़')} ${WN.esc(p.size)}</span><span class="left">${left}</span></div>`);
+  }
+  setHTML($('rack'), tiles.join(''));
+
+  const t = s.tally;
+  setHTML($('stats'), [
+    ['var(--hold)', t.held, T('Kept on shelf', 'शेल्फ पर रखे')],
+    ['var(--door)', t.resold, T('Given for local delivery', 'लोकल डिलीवरी के लिए दिए')],
+    ['var(--batch)', t.batched, T('Put in return bag', 'वापसी बैग में डाले')],
+    ['var(--alone)', t.returned_alone, T('Sent back to seller', 'सेलर को वापस भेजे')],
+  ].map(([c, n, l]) => `<div class="card stat" style="border-top-color:${c}"><b class="num">${n}</b><span>${l}</span></div>`).join(''));
+}
+
+document.body.addEventListener('click', e => {
+  if (e.target.closest('[data-lang]')) { WN.setLang(WN.lang === 'hi' ? 'en' : 'hi'); render(WN.state); }
+  const d = e.target.closest('[data-done]');
+  if (d) { doneTasks.add(d.dataset.done); render(WN.state); }
+});
+
+WN.getStatic().then(st => {
+  st.reasons.forEach(r => { reasonIdByLabel[r.label] = r.id; });
+  if (embedded) { $('controls').style.display = 'none'; WN.poll(render, 1000); }
+  else WN.mountControls($('controls')).then(fn => { syncControls = fn; WN.poll(render, 1000); });
+});
+</script>
+</body>
+</html>

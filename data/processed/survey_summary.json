@@ -1,0 +1,143 @@
+{
+  "responses": 150,
+  "segment": "COD users",
+  "segment_n": 47,
+  "had_failed_delivery_n": 36,
+  "reason_mix": {
+    "changed_mind": {
+      "share": 0.222,
+      "range": [
+        0.117,
+        0.381
+      ],
+      "n": 8
+    },
+    "not_home": {
+      "share": 0.222,
+      "range": [
+        0.117,
+        0.381
+      ],
+      "n": 8
+    },
+    "fit_quality": {
+      "share": 0.167,
+      "range": [
+        0.079,
+        0.319
+      ],
+      "n": 6
+    },
+    "address": {
+      "share": 0.139,
+      "range": [
+        0.061,
+        0.287
+      ],
+      "n": 5
+    },
+    "no_cash": {
+      "share": 0.111,
+      "range": [
+        0.044,
+        0.253
+      ],
+      "n": 4
+    },
+    "other": {
+      "share": 0.083,
+      "range": [
+        0.029,
+        0.218
+      ],
+      "n": 3
+    },
+    "carrier": {
+      "share": 0.028,
+      "range": [
+        0.005,
+        0.142
+      ],
+      "n": 1
+    },
+    "reschedule": {
+      "share": 0.028,
+      "range": [
+        0.005,
+        0.142
+      ],
+      "n": 1
+    }
+  },
+  "share_refused_because_late": 0.056,
+  "share_fake_attempt_reported": 0.028,
+  "fix_rates": {
+    "no_cash": {
+      "rate": 0.439,
+      "said_yes": 0.838,
+      "range": [
+        0.287,
+        0.591
+      ],
+      "n": 37
+    },
+    "reschedule": {
+      "rate": 0.514,
+      "said_yes": 0.865,
+      "range": [
+        0.359,
+        0.666
+      ],
+      "n": 37
+    },
+    "not_home": {
+      "rate": 0.236,
+      "said_yes": 0.568,
+      "range": [
+        0.134,
+        0.401
+      ],
+      "n": 37
+    },
+    "address": {
+      "rate": 0.365,
+      "said_yes": 0.757,
+      "range": [
+        0.241,
+        0.539
+      ],
+      "n": 37
+    },
+    "fit_quality": {
+      "rate": 0.439,
+      "said_yes": 0.784,
+      "range": [
+        0.287,
+        0.591
+      ],
+      "n": 37
+    }
+  },
+  "buyer_acceptance": {
+    "accept": 0.811,
+    "range": [
+      0.658,
+      0.905
+    ],
+    "with_discount_only": 0.135,
+    "n": 37
+  },
+  "top_pin3": {
+    "751.0": 35,
+    "752.0": 7,
+    "208.0": 5,
+    "758.0": 4,
+    "764.0": 2,
+    "452.0": 2,
+    "766.0": 2,
+    "700.0": 2,
+    "110.0": 1,
+    "530.0": 1
+  },
+  "note": "Stated intent, adjusted 75/25. Friends-and-family sample: treat as directional."
+}

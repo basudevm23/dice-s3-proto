@@ -1,0 +1,290 @@
+{
+  "assumptions": {
+    "rto": 0.17000000000000004,
+    "rto_source": "CASE_PACK (80% COD x 20% + 20% prepaid x 5%)",
+    "door_fix": {
+      "delivered": 0.202,
+      "exchanged": 0.059,
+      "cost_per_refusal": 6.303394
+    },
+    "door_fix_source": "P1 (survey if available, else industry range)",
+    "buyer_acceptance": 0.811,
+    "buyer_acceptance_source": "SURVEY (n=37)",
+    "window_days": 7,
+    "k_values": [
+      1,
+      3,
+      5
+    ],
+    "batched_return_range": [
+      50,
+      120
+    ]
+  },
+  "districts": {
+    "208": {
+      "district": "Kanpur",
+      "real_orders_in_dataset": 470,
+      "period_days": 91,
+      "refused_at_valmo_rto": 80,
+      "match_rate_k1": 0.075,
+      "match_rate_source": "MODELLED from the district's real order history (too few returns to measure)",
+      "scenarios": {
+        "k1_low": {
+          "refused": 79.9,
+          "fixed_at_door": 16.1,
+          "orders_saved_by_exchange": 4.7,
+          "sent_to_shelf": 63.8,
+          "resold_locally": 3.9,
+          "batched_return": 59.9,
+          "cost_today": 9588.0,
+          "cost_with_wapas_nahi": 3651.7,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 45.7,
+          "match_rate": 0.075
+        },
+        "k1_high": {
+          "refused": 79.9,
+          "fixed_at_door": 16.1,
+          "orders_saved_by_exchange": 4.7,
+          "sent_to_shelf": 63.8,
+          "resold_locally": 3.9,
+          "batched_return": 59.9,
+          "cost_today": 9588.0,
+          "cost_with_wapas_nahi": 7844.5,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 98.2,
+          "match_rate": 0.075
+        },
+        "k3_low": {
+          "refused": 79.9,
+          "fixed_at_door": 16.1,
+          "orders_saved_by_exchange": 4.7,
+          "sent_to_shelf": 63.8,
+          "resold_locally": 10.7,
+          "batched_return": 53.0,
+          "cost_today": 9588.0,
+          "cost_with_wapas_nahi": 3448.1,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 43.2,
+          "match_rate": 0.208
+        },
+        "k3_high": {
+          "refused": 79.9,
+          "fixed_at_door": 16.1,
+          "orders_saved_by_exchange": 4.7,
+          "sent_to_shelf": 63.8,
+          "resold_locally": 10.7,
+          "batched_return": 53.0,
+          "cost_today": 9588.0,
+          "cost_with_wapas_nahi": 7159.1,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 89.6,
+          "match_rate": 0.208
+        },
+        "k5_low": {
+          "refused": 79.9,
+          "fixed_at_door": 16.1,
+          "orders_saved_by_exchange": 4.7,
+          "sent_to_shelf": 63.8,
+          "resold_locally": 16.6,
+          "batched_return": 47.1,
+          "cost_today": 9588.0,
+          "cost_with_wapas_nahi": 3273.8,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 41.0,
+          "match_rate": 0.322
+        },
+        "k5_high": {
+          "refused": 79.9,
+          "fixed_at_door": 16.1,
+          "orders_saved_by_exchange": 4.7,
+          "sent_to_shelf": 63.8,
+          "resold_locally": 16.6,
+          "batched_return": 47.1,
+          "cost_today": 9588.0,
+          "cost_with_wapas_nahi": 6572.2,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 82.3,
+          "match_rate": 0.322
+        }
+      }
+    },
+    "226": {
+      "district": "Lucknow",
+      "real_orders_in_dataset": 1397,
+      "period_days": 91,
+      "refused_at_valmo_rto": 237,
+      "match_rate_k1": 0.105,
+      "match_rate_source": "MEASURED (38 real parcels)",
+      "scenarios": {
+        "k1_low": {
+          "refused": 237.5,
+          "fixed_at_door": 48.0,
+          "orders_saved_by_exchange": 14.0,
+          "sent_to_shelf": 189.5,
+          "resold_locally": 16.1,
+          "batched_return": 173.4,
+          "cost_today": 28498.8,
+          "cost_with_wapas_nahi": 10716.5,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 45.1,
+          "match_rate": 0.105
+        },
+        "k1_high": {
+          "refused": 237.5,
+          "fixed_at_door": 48.0,
+          "orders_saved_by_exchange": 14.0,
+          "sent_to_shelf": 189.5,
+          "resold_locally": 16.1,
+          "batched_return": 173.4,
+          "cost_today": 28498.8,
+          "cost_with_wapas_nahi": 22853.0,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 96.2,
+          "match_rate": 0.105
+        },
+        "k3_low": {
+          "refused": 237.5,
+          "fixed_at_door": 48.0,
+          "orders_saved_by_exchange": 14.0,
+          "sent_to_shelf": 189.5,
+          "resold_locally": 43.5,
+          "batched_return": 146.0,
+          "cost_today": 28498.8,
+          "cost_with_wapas_nahi": 9906.8,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 41.7,
+          "match_rate": 0.283
+        },
+        "k3_high": {
+          "refused": 237.5,
+          "fixed_at_door": 48.0,
+          "orders_saved_by_exchange": 14.0,
+          "sent_to_shelf": 189.5,
+          "resold_locally": 43.5,
+          "batched_return": 146.0,
+          "cost_today": 28498.8,
+          "cost_with_wapas_nahi": 20127.3,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 84.8,
+          "match_rate": 0.283
+        },
+        "k5_low": {
+          "refused": 237.5,
+          "fixed_at_door": 48.0,
+          "orders_saved_by_exchange": 14.0,
+          "sent_to_shelf": 189.5,
+          "resold_locally": 65.4,
+          "batched_return": 124.1,
+          "cost_today": 28498.8,
+          "cost_with_wapas_nahi": 9258.2,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 39.0,
+          "match_rate": 0.426
+        },
+        "k5_high": {
+          "refused": 237.5,
+          "fixed_at_door": 48.0,
+          "orders_saved_by_exchange": 14.0,
+          "sent_to_shelf": 189.5,
+          "resold_locally": 65.4,
+          "batched_return": 124.1,
+          "cost_today": 28498.8,
+          "cost_with_wapas_nahi": 17944.0,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 75.6,
+          "match_rate": 0.426
+        }
+      }
+    },
+    "560": {
+      "district": "Bengaluru",
+      "real_orders_in_dataset": 11581,
+      "period_days": 91,
+      "refused_at_valmo_rto": 1969,
+      "match_rate_k1": 0.36,
+      "match_rate_source": "MEASURED (136 real parcels)",
+      "scenarios": {
+        "k1_low": {
+          "refused": 1968.8,
+          "fixed_at_door": 397.7,
+          "orders_saved_by_exchange": 116.2,
+          "sent_to_shelf": 1571.1,
+          "resold_locally": 458.7,
+          "batched_return": 1112.4,
+          "cost_today": 236252.4,
+          "cost_with_wapas_nahi": 79227.1,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 40.2,
+          "match_rate": 0.36
+        },
+        "k1_high": {
+          "refused": 1968.8,
+          "fixed_at_door": 397.7,
+          "orders_saved_by_exchange": 116.2,
+          "sent_to_shelf": 1571.1,
+          "resold_locally": 458.7,
+          "batched_return": 1112.4,
+          "cost_today": 236252.4,
+          "cost_with_wapas_nahi": 157094.2,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 79.8,
+          "match_rate": 0.36
+        },
+        "k3_low": {
+          "refused": 1968.8,
+          "fixed_at_door": 397.7,
+          "orders_saved_by_exchange": 116.2,
+          "sent_to_shelf": 1571.1,
+          "resold_locally": 940.1,
+          "batched_return": 630.9,
+          "cost_today": 236252.4,
+          "cost_with_wapas_nahi": 64984.4,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 33.0,
+          "match_rate": 0.738
+        },
+        "k3_high": {
+          "refused": 1968.8,
+          "fixed_at_door": 397.7,
+          "orders_saved_by_exchange": 116.2,
+          "sent_to_shelf": 1571.1,
+          "resold_locally": 940.1,
+          "batched_return": 630.9,
+          "cost_today": 236252.4,
+          "cost_with_wapas_nahi": 109150.5,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 55.4,
+          "match_rate": 0.738
+        },
+        "k5_low": {
+          "refused": 1968.8,
+          "fixed_at_door": 397.7,
+          "orders_saved_by_exchange": 116.2,
+          "sent_to_shelf": 1571.1,
+          "resold_locally": 1137.3,
+          "batched_return": 433.7,
+          "cost_today": 236252.4,
+          "cost_with_wapas_nahi": 59150.6,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 30.0,
+          "match_rate": 0.893
+        },
+        "k5_high": {
+          "refused": 1968.8,
+          "fixed_at_door": 397.7,
+          "orders_saved_by_exchange": 116.2,
+          "sent_to_shelf": 1571.1,
+          "resold_locally": 1137.3,
+          "batched_return": 433.7,
+          "cost_today": 236252.4,
+          "cost_with_wapas_nahi": 89512.7,
+          "cost_per_refused_today": 120,
+          "cost_per_refused_new": 45.5,
+          "match_rate": 0.893
+        }
+      }
+    }
+  }
+}

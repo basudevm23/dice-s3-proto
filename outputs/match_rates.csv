@@ -1,0 +1,13 @@
+area,window_days,parcels,matched,match_rate,low_95,high_95
+Same pincode,3,2065,38,0.018,0.013,0.025
+Same PIN district,3,2065,155,0.075,0.064,0.087
+Same city,3,2065,116,0.056,0.047,0.067
+Same state,3,2065,341,0.165,0.15,0.182
+Same pincode,7,1985,58,0.029,0.023,0.038
+Same PIN district,7,1985,269,0.136,0.121,0.151
+Same city,7,1985,198,0.1,0.087,0.114
+Same state,7,1985,548,0.276,0.257,0.296
+Same pincode,14,1844,77,0.042,0.034,0.052
+Same PIN district,14,1844,343,0.186,0.169,0.204
+Same city,14,1844,250,0.136,0.121,0.152
+Same state,14,1844,693,0.376,0.354,0.398

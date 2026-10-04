@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wapas Nahi · Live prototype (presenter view)</title>
+<link rel="stylesheet" href="/static/common.css">
+<style>
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; }
+  .panes { flex: 1; display: grid; grid-template-columns: 400px minmax(0, 1fr) 440px; gap: 0; min-height: 0; }
+  .pane { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--line); }
+  .pane .lbl { font-size: 12px; font-weight: 700; color: var(--muted); padding: 6px 12px; background: #fff; border-bottom: 1px solid var(--line); }
+  iframe { flex: 1; border: 0; width: 100%; min-height: 0; }
+  @media (max-width: 1200px) {
+    .panes { grid-template-columns: 1fr; }
+    iframe { min-height: 760px; }
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"> VALMO WAPAS NAHI · Live (Prototype Version) <small>P1 Rider (App) → P2 Hub (App) → P3 Manager (Dashboard)</small></div>
+  <div class="clock" id="clock"></div>
+  <div class="spacer"></div>
+  <div class="controls" id="controls"></div>
+</div>
+<div class="panes">
+  <div class="pane"><div class="lbl">P1 · Rider</div><iframe src="/rider" title="Rider app"></iframe></div>
+  <div class="pane"><div class="lbl">P2 · Hub</div><iframe src="/hub" title="Hub app"></iframe></div>
+  <div class="pane"><div class="lbl">P3 · Manager</div><iframe src="/savings" title="Manager dashboard"></iframe></div>
+</div>
+<script src="/static/common.js"></script>
+<script>
+WN.mountControls(document.getElementById('controls')).then(sync => {
+  WN.poll(s => { sync(s); document.getElementById('clock').textContent = WN.clockText(s); }, 1000);
+});
+</script>
+</body>
+</html>

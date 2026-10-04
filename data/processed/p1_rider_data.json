@@ -1,0 +1,111 @@
+{
+  "reasons": [
+    {
+      "id": "no_cash",
+      "group": "refused",
+      "label": "No cash right now",
+      "fix": "Pay by UPI at the door",
+      "fix_cost": 0,
+      "fix_cost_source": "same trip",
+      "success_rate": 0.439,
+      "success_source": "SURVEY (n=37, 75/25 intent rule)",
+      "share_of_refusals": 0.089,
+      "share_source": "DECK (published range 15%-40%); split from SURVEY",
+      "if_fix_fails": "Parcel goes to the hub shelf (P2)"
+    },
+    {
+      "id": "changed_mind",
+      "group": "refused",
+      "label": "Changed mind / doesn't need it",
+      "fix": "No fix at the door: send to hub shelf",
+      "fix_cost": 0,
+      "fix_cost_source": "-",
+      "success_rate": 0.0,
+      "success_source": "no fix at the door",
+      "share_of_refusals": 0.178,
+      "share_source": "DECK (published range 15%-40%); split from SURVEY",
+      "if_fix_fails": "Parcel goes to the hub shelf (P2)"
+    },
+    {
+      "id": "fit_quality",
+      "group": "refused",
+      "label": "Wrong size / not as expected",
+      "fix": "Offer an exchange (refused unit goes to hub shelf)",
+      "fix_cost": 50,
+      "fix_cost_source": "CASE_PACK forward Rs 50",
+      "success_rate": 0.439,
+      "success_source": "SURVEY (n=37, 75/25 intent rule)",
+      "share_of_refusals": 0.134,
+      "share_source": "DECK (published range 15%-40%); split from SURVEY",
+      "if_fix_fails": "Parcel goes to the hub shelf (P2)"
+    },
+    {
+      "id": "not_home",
+      "group": "unavailable",
+      "label": "Not home / not answering",
+      "fix": "Leave with neighbour or partner kirana",
+      "fix_cost": 20,
+      "fix_cost_source": "DECK Rs 20 kirana incentive",
+      "success_rate": 0.236,
+      "success_source": "SURVEY (n=37, 75/25 intent rule)",
+      "share_of_refusals": 0.249,
+      "share_source": "DECK (published range 25%-30%); split from SURVEY",
+      "if_fix_fails": "Parcel goes to the hub shelf (P2)"
+    },
+    {
+      "id": "reschedule",
+      "group": "unavailable",
+      "label": "Asks to come another day",
+      "fix": "Book a new slot (one more attempt)",
+      "fix_cost": 21,
+      "fix_cost_source": "CASE_PACK LMDC leg Rs 21",
+      "success_rate": 0.514,
+      "success_source": "SURVEY (n=37, 75/25 intent rule)",
+      "share_of_refusals": 0.031,
+      "share_source": "DECK (published range 25%-30%); split from SURVEY",
+      "if_fix_fails": "Parcel goes to the hub shelf (P2)"
+    },
+    {
+      "id": "address",
+      "group": "address",
+      "label": "Can't find the address",
+      "fix": "Customer drops map pin on WhatsApp, re-attempt",
+      "fix_cost": 21,
+      "fix_cost_source": "CASE_PACK LMDC leg Rs 21",
+      "success_rate": 0.365,
+      "success_source": "SURVEY (n=37, 75/25 intent rule)",
+      "share_of_refusals": 0.18,
+      "share_source": "DECK (published range 14%-25%); split from SURVEY",
+      "if_fix_fails": "Parcel goes to the hub shelf (P2)"
+    },
+    {
+      "id": "fake",
+      "group": "fake",
+      "label": "Customer says they never ordered",
+      "fix": "No fix: send to hub shelf, flag account",
+      "fix_cost": 0,
+      "fix_cost_source": "-",
+      "success_rate": 0.0,
+      "success_source": "no fix at the door",
+      "share_of_refusals": 0.09,
+      "share_source": "DECK (published range 9%-9%); even split (ASSUMPTION until survey)",
+      "if_fix_fails": "Parcel goes to the hub shelf (P2)"
+    },
+    {
+      "id": "carrier",
+      "group": "carrier",
+      "label": "Could not attempt (our side)",
+      "fix": "Re-attempt next day",
+      "fix_cost": 21,
+      "fix_cost_source": "CASE_PACK LMDC leg Rs 21",
+      "success_rate": 0.45,
+      "success_source": "INDUSTRY 40%-50% of failed deliveries recoverable (no survey yet)",
+      "share_of_refusals": 0.05,
+      "share_source": "DECK (published range 5%-5%); split from SURVEY",
+      "if_fix_fails": "Parcel goes to the hub shelf (P2)"
+    }
+  ],
+  "expected_delivered_after_door_fix": 0.202,
+  "expected_exchanges": 0.059,
+  "note": "Exchanges save the customer's order, but the refused unit still goes to the hub shelf."
+}
